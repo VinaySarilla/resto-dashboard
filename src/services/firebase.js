@@ -7,6 +7,8 @@ import {
   updateDoc,
   query,
   where,
+  onSnapshot,
+  doc
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -25,7 +27,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 //create a function to get the orders from firebase where restaurantId is mayabazaar_1
 
-export async function getAllOrders() {
+export async function getAllOrders(setOrders, setIncomingOrders) {
   const citiesRef = collection(db, "orders");
 
   const restaurantOrders = query(
@@ -34,27 +36,55 @@ export async function getAllOrders() {
     where("restaurantId", "==", "mayabazaar_1")
   );
 
+  onSnapshot(restaurantOrders, (doc) => {
+    let data = doc.docs.map((doc) => {
+      return { ...doc.data(), id: doc.id };
+    });
+    let incomingordersData = [];
+    let currentOrders = [];
+
+    console.log("updatedOrders", data);
+    
+    data.map((order) => {
+      if (order.status === "orderPlaced") {
+        incomingordersData.push(order);
+      } else {
+        currentOrders.push(order);
+      }
+    });
+
+    setIncomingOrders(incomingordersData);
+    setOrders(currentOrders);
+  });
+
   const querySnapshot = await getDocs(restaurantOrders);
 
   return querySnapshot.docs.map((doc) => {
+    console.log("snapping");
     return { ...doc.data(), id: doc.id };
   });
 }
 
+export const updateOrderStatus = async (orderId, status) => {
+  const order = doc(db, "orders", orderId);
+  await updateDoc(order, { status: status });
+};
+
 // create a function to update the restaurantId of all orders to mayabazaar_1
 export async function updateRestaurantId() {
-  //   const citiesRef = collection(db, "orders");
-  //   const restaurantOrders = query(
-  //     citiesRef,
-  //     where("restaurantId", "==", "mayabazaar_1")
-  //     // where("status", "==", "orderPlaced")
-  //   );
-  //   const querySnapshot = await getDocs(restaurantOrders);
-  //   querySnapshot.docs.map((doc, i) => {
-  //     if (i % 2 === 0) {
-  //       updateDoc(doc.ref, { status: "orderPlaced" });
-  //     } else {
-  //       updateDoc(doc.ref, { status: "orderDelivered" });
-  //     }
-  //   });
+  // const citiesRef = collection(db, "orders");
+  // const restaurantOrders = query(
+  //   citiesRef,
+  //   where("restaurantId", "==", "mayabazaar_1")
+  //   // where("status", "==", "orderPlaced")
+  // );
+  // const querySnapshot = await getDocs(restaurantOrders);
+  // querySnapshot.docs.map((doc, i) => {
+  //   console.log("snapping1");
+  //   // if (i % 2 === 0) {
+  //   //   updateDoc(doc.ref, { status: "orderPlaced" });
+  //   // } else {
+  //     updateDoc(doc.ref, { dunzoStatus: "deliveryNotAssigned" });
+  //   // }
+  // });
 }
