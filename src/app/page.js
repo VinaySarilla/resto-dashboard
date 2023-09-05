@@ -125,7 +125,15 @@ export default function Home() {
         <div className="w-full overflow-scroll">
           <div className="flex w-[200vw] gap-4 p-4">
             {incomingorders.map((order) => {
-              return <OrderCard order={order} key={order.id} />;
+              return (
+                <div className="min-w-[300px] w-[380px]">
+                  <OrderCard
+                    order={order}
+                    key={order.id}
+                    fetchAllOrders={fetchAllOrders}
+                  />
+                </div>
+              );
             })}
           </div>
         </div>
@@ -136,7 +144,13 @@ export default function Home() {
 
         <div className="grid grid-cols-3 gap-4 p-4 bg-zinc-100">
           {orders.map((order) => {
-            return <OrderCard order={order} key={order.id} />;
+            return (
+              <OrderCard
+                order={order}
+                key={order.id}
+                fetchAllOrders={fetchAllOrders}
+              />
+            );
           })}
         </div>
       </div>

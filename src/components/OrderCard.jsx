@@ -1,8 +1,42 @@
 import { DELIVERY_STATUS, ORDER_STATUS } from "@/constants/constants";
-import { updateOrderStatus } from "@/services/firebase";
+import { apiService } from "@/services/api-service";
+import { getAllOrders, updateOrderStatus } from "@/services/firebase";
 import React from "react";
 
-const OrderCard = ({ order }) => {
+const OrderCard = ({ order, fetchAllOrders }) => {
+  const handleOrders = async (status) => {
+    if (status === ORDER_STATUS.ORDER_READY) {
+      //trigger dunzo api
+      // let res = await apiService.fulfillOrder(order.id);
+
+      // if (res) {
+      //update order status in firebase
+      let orderUpdated = await updateOrderStatus(order.id, status, () =>
+        handleStatus()
+      );
+      // }
+    } else {
+      let orderUpdated = await updateOrderStatus(order.id, status, () =>
+        handleStatus()
+      );
+
+      // console.log(orderUpdated);
+      // if (orderUpdated) {
+      //   await ;
+      // }
+    }
+  };
+
+  const handleStatus = async () => {
+    const res = await apiService.updateStatus(order.id);
+
+    console.log(res);
+    if (res) {
+      console.log(res);
+      fetchAllOrders();
+    }
+  };
+
   return (
     <div className="overflow-hidden rounded-lg shadow-sm">
       {/* 
@@ -92,7 +126,7 @@ const OrderCard = ({ order }) => {
               <button
                 className="w-full p-4 mt-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
                 onClick={() => {
-                  updateOrderStatus(order.id, ORDER_STATUS.ORDER_ACCEPTED);
+                  handleOrders(ORDER_STATUS.ORDER_ACCEPTED);
                 }}
               >
                 Accept Order
@@ -103,7 +137,7 @@ const OrderCard = ({ order }) => {
               <button
                 className="w-full p-4 mt-2 text-white rounded-lg bg-amber-500 hover:bg-amber-500"
                 onClick={() => {
-                  updateOrderStatus(order.id, ORDER_STATUS.ORDER_READY);
+                  handleOrders(ORDER_STATUS.ORDER_READY);
                 }}
               >
                 Order Ready
@@ -114,7 +148,7 @@ const OrderCard = ({ order }) => {
               <button
                 className="w-full p-4 mt-2 text-white rounded-lg bg-amber-500 hover:bg-amber-500"
                 onClick={() => {
-                  updateOrderStatus(order.id, ORDER_STATUS.ORDER_PLACED);
+                  handleOrders(ORDER_STATUS.ORDER_OUT_FOR_DELIVERY);
                 }}
               >
                 Order Picked Up

@@ -8,7 +8,7 @@ import {
   query,
   where,
   onSnapshot,
-  doc
+  doc,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -33,28 +33,31 @@ export async function getAllOrders(setOrders, setIncomingOrders) {
   const restaurantOrders = query(
     citiesRef,
     where("status", "!=", "orderDelivered"),
-    where("restaurantId", "==", "mayabazaar_1")
+    where("restaurantId", "==", "qhEcTTJtAI7Lo8NqWHhS")
   );
 
   onSnapshot(restaurantOrders, (doc) => {
-    let data = doc.docs.map((doc) => {
-      return { ...doc.data(), id: doc.id };
-    });
-    let incomingordersData = [];
-    let currentOrders = [];
+    doc.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        let data = doc.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        });
+        let incomingordersData = [];
+        let currentOrders = [];
 
-    console.log("updatedOrders", data);
-    
-    data.map((order) => {
-      if (order.status === "orderPlaced") {
-        incomingordersData.push(order);
-      } else {
-        currentOrders.push(order);
+        console.log("updatedOrders", data);
+
+        data.map((order) => {
+          if (order.status === "orderPlaced") {
+            incomingordersData.push(order);
+          } else {
+            currentOrders.push(order);
+          }
+        });
+        setIncomingOrders(incomingordersData);
+        setOrders(currentOrders);
       }
     });
-
-    setIncomingOrders(incomingordersData);
-    setOrders(currentOrders);
   });
 
   const querySnapshot = await getDocs(restaurantOrders);
@@ -65,9 +68,14 @@ export async function getAllOrders(setOrders, setIncomingOrders) {
   });
 }
 
-export const updateOrderStatus = async (orderId, status) => {
+export const updateOrderStatus = async (orderId, status, callBack) => {
   const order = doc(db, "orders", orderId);
-  await updateDoc(order, { status: status });
+  let res = await updateDoc(order, { status: status }).then(() => {
+    callBack();
+  });
+
+  console.log("res", res);
+  return res;
 };
 
 // create a function to update the restaurantId of all orders to mayabazaar_1
