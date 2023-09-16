@@ -83,7 +83,12 @@ const OrderCard = ({ order, fetchAllOrders }) => {
       <div className="flex flex-col justify-between gap-5 p-6 bg-white ">
         <div className="flex justify-between pb-2 border-b-[1px] border-zinc-200">
           <div className="flex flex-col justify-between text-sm">
-            <p>{order.customerName}</p>
+            <p>
+              {order.customerName}{" "}
+              <span className="p-1 px-2 mx-2 text-xs rounded-full bg-zinc-100 border-zinc-600">
+                {order.type ?? "Delivery"}
+              </span>
+            </p>
             <p className="text-zinc-400">{order.customerNumber}</p>
           </div>
 

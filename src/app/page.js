@@ -96,26 +96,28 @@ export default function Home() {
   useEffect(() => {
     fetchAllOrders();
     CheckStatus();
+
+    setInterval(() => {
+      fetchAllOrders();
+    }, 1000 * 15);
   }, []);
 
   const fetchAllOrders = async () => {
-    setInterval(async () => {
-      let ordersData = await getAllOrders(setOrders, setIncomingOrders);
-      let incomingordersData = [];
-      let currentOrders = [];
-      updateRestaurantId();
-      console.log(orders);
-      ordersData.map((order) => {
-        if (order.status === "orderPlaced") {
-          incomingordersData.push(order);
-        } else {
-          currentOrders.push(order);
-        }
-      });
+    let ordersData = await getAllOrders(setOrders, setIncomingOrders);
+    let incomingordersData = [];
+    let currentOrders = [];
+    updateRestaurantId();
+    console.log(orders);
+    ordersData.map((order) => {
+      if (order.status === "orderPlaced") {
+        incomingordersData.push(order);
+      } else {
+        currentOrders.push(order);
+      }
+    });
 
-      setIncomingOrders(incomingordersData);
-      setOrders(currentOrders);
-    }, 1000 * 15);
+    setIncomingOrders(incomingordersData);
+    setOrders(currentOrders);
     // setOrders(orders);
   };
 
@@ -134,7 +136,7 @@ export default function Home() {
   return (
     <div className="h-screen bg-zinc-100 font-inter">
       <div className="flex items-center h-16 px-6 text-2xl bg-white">
-        Maybazaar
+        <img src="/logo.svg" className="h-8" />
       </div>
 
       <div>
