@@ -1,4 +1,5 @@
 // Import the functions you need from the SDKs you need
+import { ORDER_STATUS } from "@/constants/constants";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import {
@@ -45,8 +46,6 @@ export async function getAllOrders(setOrders, setIncomingOrders) {
         let incomingordersData = [];
         let currentOrders = [];
 
-        console.log("updatedOrders", data);
-
         data.map((order) => {
           if (order.status === "orderPlaced") {
             incomingordersData.push(order);
@@ -70,6 +69,20 @@ export async function getAllOrders(setOrders, setIncomingOrders) {
 
 export const updateOrderStatus = async (orderId, status, callBack) => {
   const order = doc(db, "orders", orderId);
+  if (status === ORDER_STATUS.ORDER_ACCEPTED) {
+    const currentEpoch = Math.floor(new Date().getTime() / 1000.0);
+
+    let res = await updateDoc(order, {
+      status: status,
+      accepted_timestamp: currentEpoch,
+    }).then(() => {
+      callBack();
+    });
+
+    console.log("res", res);
+    return res;
+  }
+
   let res = await updateDoc(order, { status: status }).then(() => {
     callBack();
   });

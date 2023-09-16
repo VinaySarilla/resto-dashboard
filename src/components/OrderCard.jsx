@@ -4,7 +4,27 @@ import { getAllOrders, updateOrderStatus } from "@/services/firebase";
 import React from "react";
 
 const OrderCard = ({ order, fetchAllOrders }) => {
+  const currentEpoch = Math.floor(new Date().getTime() / 1000.0);
+
+  const getDiffInMinutes = (epoch) => {
+    console.log(currentEpoch, "epoch");
+    const diff = currentEpoch - epoch;
+    let finalDiff = Math.floor(diff / 60);
+
+    let diffToMinutes = finalDiff % 60;
+
+    return diffToMinutes;
+  };
+
   const handleOrders = async (status) => {
+    if (status === ORDER_STATUS.ORDER_REJECTED) {
+      let orderUpdated = await updateOrderStatus(order.id, status, () =>
+        handleStatus()
+      );
+
+      return;
+    }
+
     if (status === ORDER_STATUS.ORDER_READY) {
       //trigger dunzo api
       // let res = await apiService.fulfillOrder(order.id);
@@ -71,7 +91,11 @@ const OrderCard = ({ order, fetchAllOrders }) => {
             <p className="p-1 px-2 text-white rounded-lg bg-slate-800 w-fit">
               {order.id}
             </p>
-            <p className="mt-1 text-zinc-400">{order.receivedAt}</p>
+            {/* <p className="mt-1 text-zinc-400">{order.receivedAt}</p> */}
+            <p className="mt-1 text-zinc-400">
+              {getDiffInMinutes(order?.accepted_timestamp ?? 1694859905)} mins
+              ago
+            </p>
           </div>
         </div>
         <div
@@ -102,11 +126,13 @@ const OrderCard = ({ order, fetchAllOrders }) => {
           <div className="flex gap-2">
             {order.status !== ORDER_STATUS.ORDER_PLACED && (
               <button className="w-full gap-4 p-4 mt-2 text-xs rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700">
-                00:01
-                {order.dunzoStatus ===
+                <span className="ml-2 capitalize text-zinc-600">
+                  {order.dunzoStatus}
+                </span>
+                {/* {order.dunzoStatus ===
                   DELIVERY_STATUS.DELIVERY_NOT_ASSIGNED && (
                   <span className="text-[10px] text-zinc-600 ml-2">
-                    Delivery status
+                    Runner not assigned
                   </span>
                 )}
                 {order.dunzoStatus === DELIVERY_STATUS.DELIVERY_REQUESTED && (
@@ -118,19 +144,29 @@ const OrderCard = ({ order, fetchAllOrders }) => {
                   <span className="text-[10px] text-zinc-600 ml-2">
                     Runner Assigned
                   </span>
-                )}
+                )} */}
               </button>
             )}
 
             {order.status === ORDER_STATUS.ORDER_PLACED && (
-              <button
-                className="w-full p-4 mt-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
-                onClick={() => {
-                  handleOrders(ORDER_STATUS.ORDER_ACCEPTED);
-                }}
-              >
-                Accept Order
-              </button>
+              <div className="flex w-full gap-2">
+                <button
+                  className="w-full p-2 mt-2 text-white rounded-lg bg-amber-500 hover:bg-amber-500 "
+                  onClick={() => {
+                    handleOrders(ORDER_STATUS.ORDER_REJECTED);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="w-full p-2 mt-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
+                  onClick={() => {
+                    handleOrders(ORDER_STATUS.ORDER_ACCEPTED);
+                  }}
+                >
+                  Accept
+                </button>
+              </div>
             )}
 
             {order.status === ORDER_STATUS.ORDER_ACCEPTED && (

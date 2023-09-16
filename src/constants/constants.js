@@ -9,6 +9,7 @@ export const ORDER_STATUS = {
     ORDER_OUT_FOR_DELIVERY: "orderOutForDelivery",
     ORDER_NOT_DELIVERED: "orderNotDelivered",
     ORDER_NOT_PICKED_UP: "orderNotPickedUp",
+    ORDER_PICKED_UP: "orderPickedUp",
 } 
 
 export const DELIVERY_STATUS = {

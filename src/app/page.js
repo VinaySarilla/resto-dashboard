@@ -3,6 +3,7 @@
 import { getAllOrders, updateRestaurantId } from "../services/firebase";
 import { useEffect, useState } from "react";
 import OrderCard from "@/components/OrderCard";
+import { apiService } from "@/services/api-service";
 export default function Home() {
   // let orders = [
   //   {
@@ -94,26 +95,42 @@ export default function Home() {
 
   useEffect(() => {
     fetchAllOrders();
+    CheckStatus();
   }, []);
 
   const fetchAllOrders = async () => {
-    let ordersData = await getAllOrders(setOrders, setIncomingOrders);
-    let incomingordersData = [];
-    let currentOrders = [];
-    updateRestaurantId();
-    console.log(orders);
-    ordersData.map((order) => {
-      if (order.status === "orderPlaced") {
-        incomingordersData.push(order);
-      } else {
-        currentOrders.push(order);
-      }
-    });
+    setInterval(async () => {
+      let ordersData = await getAllOrders(setOrders, setIncomingOrders);
+      let incomingordersData = [];
+      let currentOrders = [];
+      updateRestaurantId();
+      console.log(orders);
+      ordersData.map((order) => {
+        if (order.status === "orderPlaced") {
+          incomingordersData.push(order);
+        } else {
+          currentOrders.push(order);
+        }
+      });
 
-    setIncomingOrders(incomingordersData);
-    setOrders(currentOrders);
+      setIncomingOrders(incomingordersData);
+      setOrders(currentOrders);
+    }, 1000 * 15);
     // setOrders(orders);
   };
+
+  const CheckStatus = async () => {
+    //call every 14mins
+
+    apiService.healthCheck();
+    apiService.dunzoStatus();
+
+    setInterval(() => {
+      apiService.healthCheck();
+      apiService.dunzoStatus();
+    }, 1000 * 60 * 14);
+  };
+
   return (
     <div className="h-screen bg-zinc-100 font-inter">
       <div className="flex items-center h-16 px-6 text-2xl bg-white">

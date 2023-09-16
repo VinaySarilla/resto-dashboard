@@ -21,6 +21,26 @@ const updateStatus = async (orderId) => {
   return jsonData;
 };
 
+const healthCheck = async () => {
+  let url = `https://shopapp-tv4c.onrender.com/status`;
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+};
+
+const dunzoStatus = async () => {
+  let url = `https://turtlery-dunzo-webhook.onrender.com/status`;
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+};
+
 const fulfillOrder = async (orderId) => {
   let url = `https://shopapp-tv4c.onrender.com/fulfill/${orderId}`;
   return fetch(url, {
@@ -35,4 +55,6 @@ const fulfillOrder = async (orderId) => {
 export const apiService = {
   updateStatus,
   fulfillOrder,
+  healthCheck,
+  dunzoStatus,
 };
