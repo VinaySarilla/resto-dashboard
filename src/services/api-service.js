@@ -49,7 +49,7 @@ const fulfillOrder = async (orderId) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({}),
-  }).then((res) => res.json());
+  }).then((res) => res);
 };
 
 export const apiService = {

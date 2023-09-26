@@ -26,15 +26,18 @@ const OrderCard = ({ order, fetchAllOrders }) => {
     }
 
     if (status === ORDER_STATUS.ORDER_READY) {
-      //trigger dunzo api
-      // let res = await apiService.fulfillOrder(order.id);
 
-      // if (res) {
-      //update order status in firebase
-      let orderUpdated = await updateOrderStatus(order.id, status, () =>
-        handleStatus()
-      );
-      // }
+      console.log("order ready");
+      //trigger dunzo api
+      let res = await apiService.fulfillOrder(order.id);
+
+      console.log("ressss", res);
+      if (res) {
+        //update order status in firebase
+        let orderUpdated = await updateOrderStatus(order.id, status, () =>
+          handleStatus()
+        );
+      }
     } else {
       let orderUpdated = await updateOrderStatus(order.id, status, () =>
         handleStatus()
