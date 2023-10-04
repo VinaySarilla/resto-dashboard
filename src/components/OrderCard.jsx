@@ -101,7 +101,7 @@ const OrderCard = ({ order, fetchAllOrders }) => {
             </p>
             {/* <p className="mt-1 text-zinc-400">{order.receivedAt}</p> */}
             <p className="mt-1 text-zinc-400">
-              {getDiffInMinutes(order?.accepted_timestamp ?? 1694859905)} mins
+              {getDiffInMinutes(order?.accepted_timestamp ?? order?.receivedAt)} mins
               ago
             </p>
           </div>

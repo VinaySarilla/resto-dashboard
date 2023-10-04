@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { ORDER_STATUS } from "@/constants/constants";
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getDoc, getFirestore } from "firebase/firestore";
 import {
   collection,
   getDocs,
@@ -108,4 +108,11 @@ export async function updateRestaurantId() {
   //     updateDoc(doc.ref, { dunzoStatus: "deliveryNotAssigned" });
   //   // }
   // });
+}
+
+export async function getOrderById(orderId) {
+  const order = doc(db, "orders", orderId);
+  const docSnap = await getDoc(order);
+  
+  return { ...docSnap.data(), id: docSnap.id};
 }
