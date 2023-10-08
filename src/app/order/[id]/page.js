@@ -85,13 +85,15 @@ export default function Page({ params }) {
                 <p>Order Picked Up</p>
                 <p className="text-[10px]">Delivery partner is on the way</p>
               </div>
-              <a
-                className=" text-[10px] p-1 px-3 text-white rounded-full bg-amber-700"
-                href={order.dunzoDetails.trackingLink}
-                target="_blank"
-              >
-                Track
-              </a>
+              {order?.dunzoDetails && (
+                <a
+                  className=" text-[10px] p-1 px-3 text-white rounded-full bg-amber-700"
+                  href={order?.dunzoDetails?.trackingLink}
+                  target="_blank"
+                >
+                  Track
+                </a>
+              )}
             </div>
           )}
           {/* {false ? (
@@ -123,11 +125,14 @@ export default function Page({ params }) {
               </span>
             </p>
           </div>
-          
-          <div className="w-full p-3 text-xs text-center rounded-lg bg-zinc-50 border-[1px] border-zinc-200">
-            We will reach you by {getTime(order.accepted_timestamp, order.dunzoDetails.dunzoETA)}
-          </div>
 
+          <div className="w-full p-3 text-xs text-center rounded-lg bg-zinc-50 border-[1px] border-zinc-200">
+            We will reach you by{" "}
+            {getTime(
+              order.accepted_timestamp,
+              order?.dunzoDetails?.dunzoETA ?? 0
+            )}
+          </div>
         </div>
 
         <div className="p-4 bg-white rounded-md shadow-sm">
